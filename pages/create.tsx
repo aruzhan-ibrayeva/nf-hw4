@@ -1,11 +1,10 @@
-// src/pages/create.tsx
 import React, { useState } from 'react';
 import axios from 'axios';
 
 function CreateProduct() {
     const [title, setTitle] = useState('');
 
-    const handleSubmit = async (event) => {
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const result = await axios.post('https://fakestoreapi.com/products', {
             title,
