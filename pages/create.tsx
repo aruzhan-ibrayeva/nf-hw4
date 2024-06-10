@@ -1,39 +1,85 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import styles from './CreateProduct.module.css'
+import { useMutation, useQueryClient } from 'react-query';
+import { useRouter } from 'next/router';
+import { Product } from '../src/types/product'
+import styles from './CreateProduct.module.css';
 
 function CreateProduct() {
-    const [title, setTitle] = useState('');
+    const [productData, setProductData] = useState({ title: '', description: '', price: '' });
+    const queryClient = useQueryClient();
+    const router = useRouter();
+    
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        const { name, value } = e.target;
+        setProductData(prevData => ({
+            ...prevData,
+            [name]: value
+        }));
+    };
 
-    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-        try {
-            const result = await axios.post('https://fakestoreapi.com/products', {
-                title,
-            });
-            console.log(result.data);
-            alert('Product created successfully!'); 
-        } catch (error) {
-            console.error('Error creating product:', error);
-            alert('Failed to create product.');  
+    const createProduct = async (): Promise<Product> => {
+        const response = await axios.post<Product>('https://fakestoreapi.com/products', {
+            ...productData,
+            price: parseFloat(productData.price) 
+        });
+        return response.data;
+    };
+
+    const { mutate } = useMutation(createProduct, {
+        onSuccess: (newProduct) => {
+            queryClient.setQueryData<Product[]>('products', old => old ? [...old, newProduct] : [newProduct]);
+            alert('Product created successfully!');
+        },
+        onError: () => {
+            alert('Failed to create product.');
         }
+    });
+
+    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        mutate();
     };
 
     return (
         <div className={styles.container}>
             <form onSubmit={handleSubmit} className={styles.form}>
                 <div className={styles.formControl}>
-                    <label className={styles.label} htmlFor="title">Enter product title</label>
+                    <label className={styles.label} htmlFor="title">Product Title</label>
                     <input
                         className={styles.input}
                         type="text"
                         id="title"
-                        value={title}
-                        onChange={(e) => setTitle(e.target.value)}
-                        placeholder="Product title"
+                        name="title"
+                        value={productData.title}
+                        onChange={handleChange}
+                        placeholder="Enter product title"
                     />
                 </div>
-                <button type="submit" className={styles.button}>Post Product</button>
+                <div className={styles.formControl}>
+                    <label className={styles.label} htmlFor="description">Description</label>
+                    <textarea
+                        className={styles.input}
+                        id="description"
+                        name="description"
+                        value={productData.description}
+                        onChange={handleChange}
+                        placeholder="Enter product description"
+                    />
+                </div>
+                <div className={styles.formControl}>
+                    <label className={styles.label} htmlFor="price">Price</label>
+                    <input
+                        className={styles.input}
+                        type="text"
+                        id="price"
+                        name="price"
+                        value={productData.price}
+                        onChange={handleChange}
+                        placeholder="Enter product price"
+                    />
+                </div>
+                <button type="submit" className={styles.button}>Create Product</button>
             </form>
         </div>
     );
