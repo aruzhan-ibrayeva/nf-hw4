@@ -1,4 +1,4 @@
-.product-card {
+.productCard {
     background: #fff;
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -9,7 +9,7 @@
     justify-content: start;
 }
 
-.product-image {
+.productImage {
     width: 150px;
     height: 150px;
     object-fit: cover;
@@ -17,22 +17,23 @@
     border-radius: 4px;
 }
 
-.product-info {
+.productInfo {
     flex: 1;
 }
-.product-title {
+
+.productTitle {
     font-size: 24px;
     color: #222;
     margin-bottom: 10px;
 }
 
-.product-description {
+.productDescription {
     font-size: 16px;
     color: #666;
     margin-bottom: 10px;
 }
 
-.product-price {
+.productPrice {
     font-size: 20px;
     color: green;
     font-weight: bold;

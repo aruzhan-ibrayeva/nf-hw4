@@ -1,6 +1,6 @@
 import React from 'react';
+import styles from './ProductCard.module.css';  // Importing CSS module
 import { Product } from '../types/product';
-
 
 interface ProductCardProps {
     product: Product;
@@ -8,11 +8,13 @@ interface ProductCardProps {
 
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     return (
-        <div>
-            <h2>{product.title}</h2>
-            <img src={product.image} alt={product.title} style={{ width: '100px', height: '100px' }} />
-            <p>{product.description}</p>
-            <p>${product.price}</p>
+        <div className={styles.productCard}>
+            <img src={product.image} alt={product.title} className={styles.productImage} />
+            <div className={styles.productInfo}>
+                <h2 className={styles.productTitle}>{product.title}</h2>
+                <p className={styles.productDescription}>{product.description}</p>
+                <p className={styles.productPrice}>${product.price}</p>
+            </div>
         </div>
     );
 }

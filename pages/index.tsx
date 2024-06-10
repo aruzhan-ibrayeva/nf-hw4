@@ -1,7 +1,9 @@
+import React from 'react';
 import { useQuery } from 'react-query';
 import { fetchProducts } from '@/src/services/productService';
 import ProductCard from '../src/components/ProductCard';
 import { Product } from '@/src/types/product';
+import Header from '../src/components/Header'
 
 export default function HomePage() {
     const { data: products, isLoading, error } = useQuery('products', fetchProducts);
@@ -11,7 +13,7 @@ export default function HomePage() {
 
     return (
         <div>
-            <h1>Welcome to the Products App</h1>
+            <Header/>
             <div style={{ display: 'flex', flexWrap: 'wrap' }}>
                 {products?.map((product: Product) => (
                     <ProductCard key={product.id} product={product} />

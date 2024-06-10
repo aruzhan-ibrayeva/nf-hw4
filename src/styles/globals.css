@@ -21,6 +21,15 @@
     }
 }
 
+header {
+    background: #b3d3f6;
+    color: #ffffff;
+    padding: 10px 20px;
+    text-align: center;
+    font-size: 22px;
+    margin-bottom: 20px;
+}
+
 body {
     font-family: 'Arial', sans-serif;
     line-height: 1.6;
@@ -34,4 +43,8 @@ body {
     .text-balance {
         text-wrap: balance;
     }
+}
+main {
+    max-width: 1200px;
+    margin: 0 auto;
 }
