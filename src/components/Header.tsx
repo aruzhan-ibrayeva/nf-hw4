@@ -1,15 +1,19 @@
 import Link from 'next/link';
+import styles from './Header.module.css'; 
 
 const Header: React.FC = () => {
     return (
-        <header>
+        <header className={styles.header}>
             <nav>
-                <ul>
-                    <li>
-                        <Link href="/">Home</Link>
+                <ul className={styles.nav}>
+                    <li className={styles.navItem}>
+                        <Link href="/" className={styles.navLink}>Home</Link>
                     </li>
-                    <li>
-                        <Link href="/create">Create Product</Link>
+                    <li className={styles.navButton}>
+                        <Link href="/create" className={styles.navLink}>
+                            <span className={styles.buttonContent}>+</span>
+                            <span className={styles.buttonText}>Post a new product</span>
+                        </Link>
                     </li>
                 </ul>
             </nav>
