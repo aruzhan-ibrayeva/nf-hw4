@@ -1,4 +1,3 @@
-// Type definition for product
 export interface Product {
     id: number;
     title: string;

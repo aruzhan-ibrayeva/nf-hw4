@@ -1,0 +1,13 @@
+header {
+    background: #007BFF;
+    color: #ffffff;
+    padding: 10px 20px;
+    text-align: center;
+    font-size: 22px;
+    margin-bottom: 20px;
+}
+
+main {
+    max-width: 1200px;
+    margin: 0 auto;
+}
