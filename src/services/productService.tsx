@@ -1,11 +1,14 @@
-import axios from 'axios';
+import axiosInstance from '../api/axios';
 import { Product } from '../types/product';
+import CreateProduct from '@/pages/create';
 
-const axiosInstance = axios.create({
-    baseURL: 'https://fakestoreapi.com',
-});
-
-export const fetchProducts = async () => {
-    const response = await axiosInstance.get('/products');
-    return response.data;
+export const fetchProducts = async (): Promise<Product[]> => {
+    try {
+        const response = await axiosInstance.get<Product[]>('/products');
+        console.log('Products fetched:', response.data); // Debugging line
+        return response.data;
+    } catch (error) {
+        console.error('Failed to fetch products:', error); 
+        throw error;
+    }
 };

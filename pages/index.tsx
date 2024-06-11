@@ -6,8 +6,11 @@ import { Product } from '@/src/types/product';
 import Header from '../src/components/Header'
 
 export default function HomePage() {
-    const { data: products, isLoading, error } = useQuery('products', fetchProducts);
-
+    const { data: products, isLoading, error } = useQuery('products', fetchProducts, {
+        staleTime: 0, 
+        refetchOnWindowFocus: true 
+    });
+    
     if (isLoading) return <div>Loading...</div>;
     if (error instanceof Error) return <div>An error occurred: {error.message}</div>;
 

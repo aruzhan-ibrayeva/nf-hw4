@@ -1,16 +1,33 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import { useMutation, useQueryClient } from 'react-query';
-import { useRouter } from 'next/router';
 import { Product } from '../src/types/product'
+import Button from '../src/components/ui/Button';
+import Input from '../src/components/ui/Input';
 import styles from './CreateProduct.module.css';
+import axios from 'axios';
+import { useRouter } from 'next/router';
+
+
+const uploadImage = async (file: File): Promise<string> => {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const response = await axios.post('https://fakeapi.platzi.com/api/v1/files/upload', formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data',
+        },
+    });
+    return response.data.url;
+};
 
 function CreateProduct() {
-    const [productData, setProductData] = useState({ title: '', description: '', price: '' });
+    const [productData, setProductData] = useState({ title: '', description: '', price: '', imageUrl: '' });
+    const [file, setFile] = useState<File | null>(null);
     const queryClient = useQueryClient();
     const router = useRouter();
-    
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setProductData(prevData => ({
             ...prevData,
@@ -18,24 +35,42 @@ function CreateProduct() {
         }));
     };
 
-    const createProduct = async (): Promise<Product> => {
-        const response = await axios.post<Product>('https://fakestoreapi.com/products', {
-            ...productData,
-            price: parseFloat(productData.price) 
-        });
-        return response.data;
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files?.[0]) {
+            setFile(e.target.files[0]);
+        }
     };
+
+    const createProduct = async () => {
+        if (file) {
+            const imageUrl = await uploadImage(file);
+            const response = await axios.post<Product>('https://fakestoreapi.com/products', {
+                ...productData,
+                price: parseFloat(productData.price),
+                imageUrl
+            });
+            return response.data;
+        } else {
+            throw new Error("File not provided");
+        }
+    };
+
 
     const { mutate } = useMutation(createProduct, {
         onSuccess: (newProduct) => {
-            queryClient.setQueryData<Product[]>('products', old => old ? [...old, newProduct] : [newProduct]);
+            queryClient.setQueryData<Product[]>('products', old => {
+                const updatedProducts = [...(old || []), newProduct];
+                return updatedProducts;
+            });
+            queryClient.invalidateQueries({queryKey: ['products']});
             alert('Product created successfully!');
+            router.push('/');
         },
-        onError: () => {
-            alert('Failed to create product.');
+        onError: (error) => {
+            alert('Failed to create product. Error: ' + (error as Error).message);
         }
     });
-
+    
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         mutate();
@@ -44,42 +79,32 @@ function CreateProduct() {
     return (
         <div className={styles.container}>
             <form onSubmit={handleSubmit} className={styles.form}>
-                <div className={styles.formControl}>
-                    <label className={styles.label} htmlFor="title">Product Title</label>
-                    <input
-                        className={styles.input}
-                        type="text"
-                        id="title"
-                        name="title"
-                        value={productData.title}
-                        onChange={handleChange}
-                        placeholder="Enter product title"
-                    />
-                </div>
-                <div className={styles.formControl}>
-                    <label className={styles.label} htmlFor="description">Description</label>
-                    <textarea
-                        className={styles.input}
-                        id="description"
-                        name="description"
-                        value={productData.description}
-                        onChange={handleChange}
-                        placeholder="Enter product description"
-                    />
-                </div>
-                <div className={styles.formControl}>
-                    <label className={styles.label} htmlFor="price">Price</label>
-                    <input
-                        className={styles.input}
-                        type="text"
-                        id="price"
-                        name="price"
-                        value={productData.price}
-                        onChange={handleChange}
-                        placeholder="Enter product price"
-                    />
-                </div>
-                <button type="submit" className={styles.button}>Create Product</button>
+                <Input
+                    type="text"
+                    name="title"
+                    value={productData.title}
+                    onChange={handleChange}
+                    placeholder="Enter product title"
+                />
+                <Input
+                    type="text"
+                    name="description"
+                    value={productData.description}
+                    onChange={handleChange}
+                    placeholder="Enter product description"
+                />
+                <Input
+                    type="text"
+                    name="price"
+                    value={productData.price}
+                    onChange={handleChange}
+                    placeholder="Enter product price"
+                />
+                <input
+                    type="file"
+                    onChange={handleFileChange}
+                />
+                <Button onClick={() => {}}>Create Product</Button>
             </form>
         </div>
     );
